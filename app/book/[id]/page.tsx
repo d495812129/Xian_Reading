@@ -1,9 +1,61 @@
 import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Download, BookMarked, User as UserIcon } from "lucide-react";
 import { mockBooks, isMockMode } from "@/lib/mock-data";
 import DownloadButton from "@/components/DownloadButton";
+
+const siteUrl = "https://xianshuku.cn";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { id: string };
+}): Promise<Metadata> {
+  if (isMockMode) {
+    const book = mockBooks.find((b) => b.id === params.id);
+    if (!book) return { title: "书籍详情" };
+    return {
+      title: `${book.title} - ${book.author}`,
+      description:
+        book.description ||
+        `《${book.title}》${book.author}著，百度网盘免费下载。`,
+      alternates: { canonical: `/book/${book.id}` },
+      openGraph: {
+        title: `${book.title} - ${book.author} | 闲书库`,
+        description: book.description || `《${book.title}》电子书网盘下载`,
+        images: book.cover_url ? [{ url: book.cover_url }] : undefined,
+        type: "article",
+        url: `${siteUrl}/book/${book.id}`,
+      },
+    };
+  }
+
+  const supabase = createPublicClient();
+  const { data: book } = await supabase
+    .from("books")
+    .select("id, title, author, description, cover_url")
+    .eq("id", params.id)
+    .single();
+
+  if (!book) return { title: "书籍详情" };
+
+  return {
+    title: `${book.title} - ${book.author}`,
+    description:
+      book.description || `《${book.title}》${book.author}著，百度网盘免费下载。`,
+    alternates: { canonical: `/book/${book.id}` },
+    openGraph: {
+      title: `${book.title} - ${book.author} | 闲书库`,
+      description: book.description || `《${book.title}》电子书网盘下载`,
+      images: book.cover_url ? [{ url: book.cover_url }] : undefined,
+      type: "article",
+      url: `${siteUrl}/book/${book.id}`,
+    },
+  };
+}
 
 export default async function BookDetailPage({
   params,

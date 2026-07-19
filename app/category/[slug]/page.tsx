@@ -1,7 +1,47 @@
 import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
+import type { Metadata } from "next";
 import BookGrid from "@/components/BookGrid";
 import { notFound } from "next/navigation";
 import { mockBooks, mockCategories, isMockMode } from "@/lib/mock-data";
+
+const siteUrl = "https://xianshuku.cn";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  if (isMockMode) {
+    const category = mockCategories.find((c) => c.slug === params.slug);
+    if (!category) return { title: "分类" };
+    return {
+      title: `${category.name}电子书`,
+      description: `闲书库${category.name}分类，免费下载${category.name}类电子书。`,
+      alternates: { canonical: `/category/${category.slug}` },
+    };
+  }
+
+  const supabase = createPublicClient();
+  const { data: category } = await supabase
+    .from("categories")
+    .select("name, slug")
+    .eq("slug", params.slug)
+    .single();
+
+  if (!category) return { title: "分类" };
+
+  return {
+    title: `${category.name}电子书`,
+    description: `闲书库${category.name}分类，免费下载${category.name}类电子书，百度网盘直接保存。`,
+    alternates: { canonical: `/category/${category.slug}` },
+    openGraph: {
+      title: `${category.name}电子书 | 闲书库`,
+      description: `闲书库${category.name}分类，免费下载${category.name}类电子书。`,
+      url: `${siteUrl}/category/${category.slug}`,
+    },
+  };
+}
 
 export default async function CategoryPage({
   params,
