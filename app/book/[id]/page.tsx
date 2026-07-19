@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Download, BookMarked, User as UserIcon } from "lucide-react";
 import { mockBooks, isMockMode } from "@/lib/mock-data";
+import DownloadButton from "@/components/DownloadButton";
 
 export default async function BookDetailPage({
   params,
@@ -101,36 +102,13 @@ function BookDetailContent({
               <Download className="w-5 h-5 text-brand-600" />
               下载地址
             </h2>
-            <div className="space-y-2 text-sm">
-              <div>
-                <span className="text-stone-500">网盘链接：</span>
-                <a
-                  href={book.pan_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-brand-600 hover:underline break-all"
-                >
-                  {book.pan_link}
-                </a>
-              </div>
-              {book.pan_password && (
-                <div>
-                  <span className="text-stone-500">提取码：</span>
-                  <code className="px-2 py-0.5 bg-stone-100 rounded font-mono">
-                    {book.pan_password}
-                  </code>
-                </div>
-              )}
-            </div>
-            <a
-              href={book.pan_link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700 transition text-sm"
-            >
-              <Download className="w-4 h-4" />
-              前往网盘下载
-            </a>
+            <p className="text-sm text-stone-500 mb-3">
+              点击下载自动跳转百度网盘，输入提取码保存到网盘即可
+            </p>
+            <DownloadButton
+              panLink={book.pan_link}
+              panPassword={book.pan_password}
+            />
           </div>
         </div>
       </div>

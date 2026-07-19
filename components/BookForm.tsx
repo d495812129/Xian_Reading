@@ -204,11 +204,14 @@ export default function BookForm({
 
       {/* 网盘链接 */}
       <div className="border-t border-stone-200 pt-4">
-        <h3 className="font-medium mb-3">网盘下载</h3>
+        <h3 className="font-medium mb-1">网盘下载</h3>
+        <p className="text-xs text-amber-600 mb-3">
+          务必填百度网盘推广链接（带推广参数），否则用户保存不计佣金
+        </p>
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">
-              网盘链接 *
+              推广链接 *
             </label>
             <input
               type="url"
@@ -216,7 +219,7 @@ export default function BookForm({
               value={panLink}
               onChange={(e) => setPanLink(e.target.value)}
               className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
-              placeholder="https://pan.baidu.com/..."
+              placeholder="https://pan.baidu.com/s/...（推广链接）"
             />
           </div>
           <div>
@@ -228,6 +231,9 @@ export default function BookForm({
               className="w-32 px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
               placeholder="如 abcd"
             />
+            <p className="text-xs text-stone-400 mt-1">
+              用户点击下载后才会显示提取码
+            </p>
           </div>
         </div>
       </div>
